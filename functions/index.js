@@ -30,6 +30,7 @@ export async function handler(event) {
   } catch (err) {
     return {
       statusCode: err.statusCode || 500,
+      headers,
       body: JSON.stringify({
         error: err.message,
       }),
@@ -38,6 +39,7 @@ export async function handler(event) {
 
   return {
     statusCode: 200,
+    headers,
     body: JSON.stringify(response),
   };
 }
