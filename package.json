@@ -10,6 +10,7 @@
   "author": "chun-gu",
   "license": "MIT",
   "dependencies": {
+    "busboy": "^1.6.0",
     "node-fetch": "^3.2.10"
   }
 }
