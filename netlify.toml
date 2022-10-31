@@ -2,5 +2,19 @@
 functions = "./functions"
 
 [[redirects]]
+from = "/image/uploadfile"
+to = "/.netlify/functions/image"
+status = 200
+force = true
+
+[[redirects]]
+from = "/image/uploadfiles"
+to = "/.netlify/functions/image"
+status = 200
+force = true
+
+[[redirects]]
 from = "/*"
 to = "/.netlify/functions/index"
+status = 200
+force = true
