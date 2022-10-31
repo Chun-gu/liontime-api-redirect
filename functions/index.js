@@ -2,44 +2,57 @@ import https from "https";
 import fetch from "node-fetch";
 
 export async function handler(event) {
+  const {
+    path,
+    headers: { authorization },
+    httpMethod,
+    body: requestBody,
+    rawQuery,
+  } = event;
+
+  if (httpMethod === "OPTIONS")
+    return {
+      statusCode: 200,
+      ok: true,
+      headers: {
+        "Access-Control-Allow-Origin": process.env.HOST,
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Methods": "*",
+      },
+    };
+
   const httpsAgent = new https.Agent({
     rejectUnauthorized: false,
   });
-
-  const headers = {
-    "Access-Control-Allow-Origin": process.env.HOST,
-    "Content-Type": "application/json",
-  };
-
-  const {
-    httpMethod,
-    headers: { referer },
-    body,
-  } = event;
-
-  const path = new URL(referer).pathname;
-
-  let response;
   try {
-    response = await fetch(process.env.API_URL + path, {
-      headers,
-      method: httpMethod,
+    const response = await fetch(`${process.env.API_URL}${path}?${rawQuery}`, {
       agent: httpsAgent,
+      method: httpMethod,
+      headers: {
+        Authorization: authorization,
+        "Content-type": "application/json",
+      },
+      body: requestBody,
+    });
+    const { status, ok, headers } = response;
+    const resJson = await response.json();
+    const body = JSON.stringify(resJson);
+
+    headers["Access-Control-Allow-Origin"] = "*";
+    return {
+      statusCode: status,
+      ok,
+      headers,
       body,
-    }).then((res) => res.json());
+    };
   } catch (err) {
     return {
-      statusCode: err.statusCode || 500,
-      headers,
-      body: JSON.stringify({
-        error: err.message,
-      }),
+      statusCode: 404,
+      statusText: err.message,
+      ok: false,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
     };
   }
-
-  return {
-    statusCode: 200,
-    headers,
-    body: JSON.stringify(response),
-  };
 }
