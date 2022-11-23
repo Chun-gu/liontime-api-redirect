@@ -3,7 +3,6 @@ functions = "./functions"
 
 [functions]
 node_bundler = "esbuild"
-external_node_modules = ["busboy", "node-fetch"]
 
 [[redirects]]
 from = "/image/uploadfile"
